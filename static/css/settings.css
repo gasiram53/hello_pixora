@@ -1,0 +1,30 @@
+.form-card hr {
+  height: 1px;
+  margin: 1.5rem 0;
+  border: 0;
+  background: var(--line);
+}
+
+.form-card h2 {
+  margin: 0 0 .4rem;
+  color: var(--ink);
+  font-size: 1.15rem;
+  letter-spacing: -.035em;
+}
+
+.privacy-setting {
+  align-items: flex-start;
+  padding: .9rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 4%, var(--paper));
+  line-height: 1.45;
+}
+
+.privacy-setting input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  flex: 0 0 auto;
+  accent-color: var(--accent);
+}

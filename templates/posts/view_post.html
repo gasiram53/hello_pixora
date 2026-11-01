@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Post by @{{ post.username }} · PIXORA{% endblock %}
+{% block container_class %}post-detail-container{% endblock %}
+{% block content %}
+<article class="card detail-card">
+  <div class="detail-media">
+    {% if post.media_type == "video" %}<video class="post-image" src="{{ url_for('static', filename=post.image_path) }}" controls playsinline preload="metadata"></video>
+    {% else %}<img class="post-image" src="{{ url_for('static', filename=post.image_path) }}" alt="Post by {{ post.username }}">{% endif %}
+  </div>
+  <div class="detail-panel">
+    <header class="detail-post-header">
+      <a class="detail-avatar" href="{{ url_for('profile.view_profile', username=post.username) }}" aria-label="View @{{ post.username }}'s profile">
+        {% if post.avatar_path %}<img src="{{ url_for('static', filename=post.avatar_path) }}" alt="">
+        {% else %}{{ (post.username or 'P')[0]|upper }}{% endif %}
+      </a>
+      <div class="detail-author-copy">
+        <a class="detail-author username" href="{{ url_for('profile.view_profile', username=post.username) }}">@{{ post.username }}</a>
+        <time datetime="{{ post.created_at.isoformat() }}">{{ post.created_at.strftime("%b %d, %Y") }}</time>
+      </div>
+    </header>
+    {% if post.caption %}<p class="detail-caption"><a class="username" href="{{ url_for('profile.view_profile', username=post.username) }}">@{{ post.username }}</a> {{ post.caption }}</p>{% endif %}
+    <div class="detail-actions">
+      <form method="post" action="{{ url_for('posts.like', post_id=post.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="link-button" type="submit"><span aria-hidden="true">♡</span> Like <span class="like-count">· {{ like_count }}</span></button>
+      </form>
+      {% if session.get('user_id') == post.user_id %}
+        <form method="post" action="{{ url_for('posts.delete', post_id=post.id) }}" data-confirm="Delete this post?">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="link-button danger" type="submit">Delete post</button>
+        </form>
+      {% endif %}
+    </div>
+    <section class="comments detail-comments">
+      <div class="detail-comments-heading">
+        <h2>Comments</h2>
+        <span>{{ comments|length }}</span>
+      </div>
+      <div class="detail-comment-list">
+        {% for comment in comments %}<p><a class="username" href="{{ url_for('profile.view_profile', username=comment.username) }}">@{{ comment.username }}</a> {{ comment.body }}</p>{% else %}<p class="muted">No comments yet. Be the first to share a thought.</p>{% endfor %}
+      </div>
+      <form class="comment-form" method="post" action="{{ url_for('posts.comment', post_id=post.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label class="sr-only" for="comment-body">Add a comment</label><input id="comment-body" name="body" maxlength="1000" placeholder="Add a comment…" required>
+        <button class="button" type="submit">Comment</button>
+      </form>
+    </section>
+  </div>
+</article>
+{% endblock %}

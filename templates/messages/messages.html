@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block title %}Messages · PIXORA{% endblock %}
+{% block body_class %}messages-body{% endblock %}
+{% block container_class %}messages-container{% if recipient %} has-active-chat{% endif %}{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/message.css') }}?v=2">
+{% endblock %}
+{% block content %}
+<section class="messages-app" data-search-url="{{ url_for('messages.people') }}" data-static-url="{{ url_for('static', filename='') }}"
+         data-current-user-id="{{ active_user_id }}" data-recipient-id="{{ recipient.id if recipient else '' }}"
+         data-last-message-id="{{ thread[-1].id if thread else 0 }}">
+  <aside class="messages-sidebar" aria-label="Your messages">
+    <div class="inbox-top">
+      <a class="inbox-profile" href="{{ url_for('profile.view_profile', username=current_user.username) }}">
+        <span class="dm-avatar dm-avatar-large">
+          {% if current_user.avatar_path %}<img src="{{ url_for('static', filename=current_user.avatar_path) }}" alt="">
+          {% else %}{{ current_user.username[0]|upper }}{% endif %}
+        </span>
+        <span class="inbox-profile-copy"><strong>@{{ current_user.username }}</strong><span>Your inbox</span></span>
+      </a>
+      <button class="icon-button new-message-button" type="button" data-open-compose aria-label="New message" title="New message">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+    <div class="inbox-heading">
+      <div><p class="inbox-eyebrow">YOUR COMMUNITY</p><h1>Messages</h1></div>
+      <span class="inbox-count">{{ conversations|length }}</span>
+    </div>
+    <label class="conversation-search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4"/></svg>
+      <span class="sr-only">Search conversations</span>
+      <input type="search" data-conversation-filter placeholder="Search conversations" autocomplete="off">
+      <kbd>/</kbd>
+    </label>
+    <div class="conversation-list" data-conversation-list>
+      {% for conversation in conversations %}
+        <a class="conversation-item{% if recipient and recipient.id == conversation.id %} is-active{% endif %}"
+           href="{{ url_for('messages.index', user_id=conversation.id) }}"
+           data-conversation-name="{{ (conversation.username ~ ' ' ~ conversation.full_name)|lower }}">
+          <span class="dm-avatar dm-avatar-medium">
+            {% if conversation.avatar_path %}<img src="{{ url_for('static', filename=conversation.avatar_path) }}" alt="">
+            {% else %}{{ conversation.username[0]|upper }}{% endif %}
+          </span>
+          <span class="conversation-copy">
+            <span class="conversation-first-line"><strong>{{ conversation.full_name }}</strong>
+              <time>{{ conversation.created_at.strftime("%b %d") if conversation.created_at else "" }}</time>
+            </span>
+            <span class="conversation-second-line">
+              <span class="conversation-preview">{% if conversation.sender_id == session.get('user_id') %}You: {% endif %}{{ conversation.body or ("Photo" if conversation.media_path else "") }}</span>
+            </span>
+          </span>
+        </a>
+      {% else %}
+        <div class="inbox-empty" data-no-conversations>
+          <span class="empty-message-icon" aria-hidden="true">✦</span>
+          <strong>Your messages live here</strong>
+          <p>Start a conversation and keep the good moments going.</p>
+          <button class="text-action" type="button" data-open-compose>Write a message</button>
+        </div>
+      {% endfor %}
+      <p class="search-empty" data-search-empty hidden>No conversations match that search.</p>
+    </div>
+    <p class="inbox-footnote">Private conversations, made for your circle.</p>
+  </aside>
+
+  <section class="chat-panel" aria-label="Conversation">
+    {% if recipient %}
+      <header class="chat-header">
+        <a class="mobile-back" href="{{ url_for('messages.index') }}" aria-label="Back to conversations">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        </a>
+        <a class="chat-person" href="{{ url_for('profile.view_profile', username=recipient.username) }}">
+          <span class="dm-avatar dm-avatar-medium">
+            {% if recipient.avatar_path %}<img src="{{ url_for('static', filename=recipient.avatar_path) }}" alt="">
+            {% else %}{{ recipient.username[0]|upper }}{% endif %}
+          </span>
+          <span class="chat-person-copy"><strong>{{ recipient.full_name }}</strong><span>@{{ recipient.username }}</span></span>
+        </a>
+        <div class="chat-actions" aria-label="Conversation actions">
+          {% if recipient.id != current_user.id %}
+            <button class="icon-button call-header-button" type="button" data-start-call="audio" title="Start voice call" aria-label="Start voice call">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.8 9.2 3a1.5 1.5 0 0 1 1.8.8l1.2 2.8a1.5 1.5 0 0 1-.4 1.7L10 9.9a14 14 0 0 0 4.1 4.1l1.6-1.8a1.5 1.5 0 0 1 1.7-.4l2.8 1.2a1.5 1.5 0 0 1 .8 1.8l-.8 2.6a2 2 0 0 1-2 1.4A16.2 16.2 0 0 1 4.9 6a2 2 0 0 1 1.7-2.2Z"/></svg>
+            </button>
+            <button class="icon-button call-header-button" type="button" data-start-call="video" title="Start video call" aria-label="Start video call">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>
+            </button>
+          {% endif %}
+          <a class="icon-button" href="{{ url_for('profile.view_profile', username=recipient.username) }}" title="View profile" aria-label="View profile">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>
+          </a>
+          <button class="icon-button action-unavailable" type="button" disabled title="Conversation options are not available yet" aria-label="Conversation options unavailable">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+          </button>
+        </div>
+      </header>
+      <div class="chat-scroll" data-chat-scroll>
+        <div class="chat-intro">
+          <span class="dm-avatar dm-avatar-profile">
+            {% if recipient.avatar_path %}<img src="{{ url_for('static', filename=recipient.avatar_path) }}" alt="">
+            {% else %}{{ recipient.username[0]|upper }}{% endif %}
+          </span>
+          <h2>{{ recipient.full_name }}</h2>
+          <p>@{{ recipient.username }} · PIXORA</p>
+          <a href="{{ url_for('profile.view_profile', username=recipient.username) }}">View profile</a>
+        </div>
+        <div class="message-thread" aria-live="polite" aria-label="Messages">
+          {% for message in thread %}
+            <div class="message-row{% if message.sender_id == session.get('user_id') %} is-mine{% endif %}" data-message-id="{{ message.id }}">
+              {% if message.sender_id != session.get('user_id') %}
+                <span class="dm-avatar dm-avatar-tiny">
+                  {% if recipient.avatar_path %}<img src="{{ url_for('static', filename=recipient.avatar_path) }}" alt="">
+                  {% else %}{{ recipient.username[0]|upper }}{% endif %}
+                </span>
+              {% endif %}
+              <div class="message-content">
+                {% if message.body %}<p class="message-bubble">{{ message.body }}</p>{% endif %}
+                {% if message.media_path %}<img class="message-attachment" src="{{ url_for('messages.media', message_id=message.id) }}" alt="Photo attachment">{% endif %}
+                <time class="message-time">{{ message.created_at.strftime("%b %d, %I:%M %p") if message.created_at else "" }}</time>
+              </div>
+            </div>
+          {% else %}
+            <div class="thread-empty"><span aria-hidden="true">✧</span><p>This is the beginning of your conversation.</p><p>Send a hello to get things started.</p></div>
+          {% endfor %}
+        </div>
+      </div>
+      <form method="post" class="message-composer" data-message-form enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="user_id" value="{{ recipient.id }}">
+        <button class="composer-tool emoji-toggle" type="button" data-emoji-toggle aria-label="Add emoji" title="Add emoji">☺</button>
+        <label class="sr-only" for="message-body">Write a message</label>
+        <textarea id="message-body" name="body" maxlength="2000" rows="1" placeholder="Write a message..." data-message-input></textarea>
+        <span class="message-length" data-message-length aria-live="polite">0/2000</span>
+        <label class="composer-tool message-attachment-button" title="Attach a photo" aria-label="Attach a photo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 11.5-8.8 8.8a6 6 0 0 1-8.5-8.5L13.5 2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg>
+          <input type="file" name="media" accept="image/png,image/jpeg,image/gif,image/webp" data-message-attachment>
+        </label>
+        <button class="send-button" type="submit" data-send-button disabled>Send</button>
+        <div class="emoji-picker" data-emoji-picker hidden aria-label="Choose an emoji">
+          {% for emoji in ["😊", "😂", "🥰", "❤️", "✨", "🙌", "👏", "🔥", "😍", "🎉", "💜", "😎"] %}
+            <button type="button" data-emoji="{{ emoji }}" aria-label="Insert {{ emoji }}">{{ emoji }}</button>
+          {% endfor %}
+        </div>
+      </form>
+    {% else %}
+      <div class="welcome-state">
+        <div class="welcome-art" aria-hidden="true"><span class="welcome-spark spark-one">✦</span><span class="welcome-spark spark-two">✧</span>
+          <div class="welcome-bubble bubble-one"></div><div class="welcome-bubble bubble-two"></div>
+          <svg viewBox="0 0 72 72"><path d="M36 8c-15.5 0-28 10.4-28 23.3 0 7.3 4 13.8 10.3 18.1L15 63l16.5-6.2c1.5.3 3 .5 4.5.5 15.5 0 28-10.4 28-23.3S51.5 8 36 8Z"/><path d="m24 35 8 8 16-17"/></svg>
+        </div>
+        <p class="welcome-eyebrow">A LITTLE MORE CONNECTED</p>
+        <h1>Your people,<br>in one place.</h1>
+        <p class="welcome-copy">Send a note, share a thought, and keep up with the people who make your day.</p>
+        <button class="button start-chat-button" type="button" data-open-compose>Start a conversation</button>
+      </div>
+    {% endif %}
+  </section>
+</section>
+
+{% if recipient and recipient.id != current_user.id %}
+<section class="call-overlay" data-call-overlay hidden role="dialog" aria-modal="true" aria-labelledby="call-name">
+  <div class="call-window">
+    <div class="call-video-stage" data-call-video-stage hidden>
+      <video class="call-remote-video" data-call-remote autoplay playsinline></video>
+      <video class="call-local-video" data-call-local autoplay muted playsinline></video>
+    </div>
+    <div class="call-person">
+      <span class="call-avatar" data-call-avatar aria-hidden="true">
+        {% if recipient.avatar_path %}<img src="{{ url_for('static', filename=recipient.avatar_path) }}" alt="">
+        {% else %}{{ recipient.username[0]|upper }}{% endif %}
+      </span>
+      <p class="call-eyebrow" data-call-eyebrow>PIXORA CALL</p>
+      <h2 id="call-name" data-call-name>{{ recipient.full_name }}</h2>
+      <p class="call-status" data-call-status role="status" aria-live="polite">Ready to call</p>
+    </div>
+    <div class="call-actions">
+      <div class="call-action-group" data-incoming-actions hidden>
+        <button class="call-control call-control-reject" type="button" data-call-reject aria-label="Decline call">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"/></svg><span>Decline</span>
+        </button>
+        <button class="call-control call-control-accept" type="button" data-call-accept aria-label="Accept call">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.8 9.2 3a1.5 1.5 0 0 1 1.8.8l1.2 2.8a1.5 1.5 0 0 1-.4 1.7L10 9.9a14 14 0 0 0 4.1 4.1l1.6-1.8a1.5 1.5 0 0 1 1.7-.4l2.8 1.2a1.5 1.5 0 0 1 .8 1.8l-.8 2.6a2 2 0 0 1-2 1.4A16.2 16.2 0 0 1 4.9 6a2 2 0 0 1 1.7-2.2Z"/></svg><span>Accept</span>
+        </button>
+      </div>
+      <div class="call-action-group" data-active-actions hidden>
+        <button class="call-control" type="button" data-call-mute aria-label="Mute microphone" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0m-7 7v5m-4 0h8"/></svg><span>Mute</span>
+        </button>
+        <button class="call-control" type="button" data-call-speaker aria-label="Mute speaker" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4zM15 9a5 5 0 0 1 0 6m3-9a9 9 0 0 1 0 12"/></svg><span>Speaker</span>
+        </button>
+        <button class="call-control" type="button" data-call-camera aria-label="Turn camera off" aria-pressed="false" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg><span>Camera</span>
+        </button>
+        <button class="call-control call-control-end" type="button" data-call-end aria-label="End call">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"/></svg><span>End</span>
+        </button>
+      </div>
+      <div class="call-action-group" data-outgoing-actions hidden>
+        <button class="call-control call-control-end" type="button" data-call-cancel aria-label="Cancel call">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"/></svg><span>Cancel</span>
+        </button>
+      </div>
+      <div class="call-action-group" data-notice-actions hidden>
+        <button class="call-control" type="button" data-call-close>Close</button>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<dialog class="compose-dialog" data-compose-dialog aria-labelledby="compose-title">
+  <form method="dialog" class="dialog-close-form"><button class="icon-button" aria-label="Close new message dialog">×</button></form>
+  <div class="compose-dialog-heading"><span class="compose-icon" aria-hidden="true">✦</span><p class="inbox-eyebrow">MAKE A CONNECTION</p><h2 id="compose-title">New message</h2><p>Find someone to start a conversation with.</p></div>
+  <label class="compose-search"><span class="sr-only">Search people</span><input type="search" data-people-search placeholder="Search by name or username" autocomplete="off"></label>
+  <p class="people-search-status" data-people-status aria-live="polite">Search for a person to message.</p>
+  <div class="people-results" data-people-results></div>
+</dialog>
+{% endblock %}
+{% block scripts %}
+<script id="socket-io-client" src="{{ url_for('static', filename='js/socket-client.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/message.js') }}?v=2" defer></script>
+{% endblock %}

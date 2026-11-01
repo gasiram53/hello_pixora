@@ -1,0 +1,15 @@
+USE pixora;
+
+CREATE TABLE hashtags (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  tag VARCHAR(80) NOT NULL UNIQUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE post_hashtags (
+  post_id BIGINT UNSIGNED NOT NULL,
+  hashtag_id BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (post_id, hashtag_id),
+  CONSTRAINT fk_post_hashtag_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  CONSTRAINT fk_post_hashtag_tag FOREIGN KEY (hashtag_id) REFERENCES hashtags(id) ON DELETE CASCADE
+) ENGINE=InnoDB;

@@ -1,0 +1,14 @@
+.pixora-login-no-sidebar > .container,
+.pixora-register-no-sidebar > .container,
+.pixora-forgot-password-no-sidebar > .container {
+  width: min(calc(100% - 2rem), 1100px);
+  margin: 2rem auto;
+}
+
+.pixora-reset-password-no-sidebar > .container {
+  width: min(calc(100% - 2rem), 1100px);
+  margin: 2rem auto;
+}
+
+.form-card > p { color: #74788b; line-height: 1.5; }
+.form-card > form + p { margin-top: 1.25rem; }

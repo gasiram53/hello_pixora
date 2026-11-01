@@ -1,0 +1,14 @@
+@media (max-width: 760px) {
+  .topbar { align-items: flex-start; flex-direction: column; padding: .8rem 1rem; }
+  .topbar nav { gap: .65rem .9rem; }
+  .container { width: min(100% - 1rem, 640px); margin: 1rem auto; }
+  .profile-header { flex-direction: column; }
+  .page-heading { align-items: flex-start; }
+  .form-card { padding: 1.25rem; }
+}
+@media (max-width: 480px) {
+  .post-grid { gap: .2rem; }
+  .stats { gap: .75rem; flex-wrap: wrap; }
+  .page-heading { flex-direction: column; }
+  .post-header { align-items: flex-start; flex-direction: column; gap: .2rem; }
+}

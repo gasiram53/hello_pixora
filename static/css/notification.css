@@ -1,0 +1,45 @@
+.user-list {
+  gap: .65rem;
+}
+
+.notification {
+  position: relative;
+  padding: 1.05rem 1.2rem;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.notification:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--line));
+  box-shadow: var(--shadow-md);
+}
+
+.notification.unread {
+  border-left: 4px solid var(--accent);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 58%),
+    var(--paper);
+}
+
+.notification p {
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+.notification time {
+  color: var(--muted);
+  font-size: .75rem;
+}
+
+.notification > a:not(.username) {
+  display: inline-flex;
+  margin-top: .3rem;
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+@media (max-width: 576px) {
+  .notification {
+    padding: .9rem;
+  }
+}

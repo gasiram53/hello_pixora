@@ -1,0 +1,26 @@
+.topbar {
+  min-height: 76px;
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  box-shadow: 0 8px 26px rgb(23 32 51 / 5%);
+}
+
+.brand img,
+.sidebar-brand img {
+  filter: drop-shadow(0 4px 12px rgb(139 92 246 / 12%));
+}
+
+.topbar nav a {
+  border-radius: 10px;
+  transition: color .18s ease, background-color .18s ease, transform .18s ease;
+}
+
+.topbar nav a:hover {
+  background: color-mix(in srgb, var(--accent) 9%, var(--paper));
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    min-height: 64px;
+  }
+}

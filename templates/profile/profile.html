@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}@{{ profile_user.username }} · PIXORA{% endblock %}
+{% block content %}
+<div class="profile-page">
+  <section class="profile-header">
+    <div class="profile-photo-wrap">
+      <div class="profile-photo">
+        {% if profile_user.avatar_path %}
+          <img src="{{ url_for('static', filename=profile_user.avatar_path) }}" alt="Profile photo for @{{ profile_user.username }}">
+        {% else %}
+          <span>{{ profile_user.username[0]|upper }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="profile-details">
+      <div class="profile-identity">
+        <div class="profile-name-group">
+          <p class="profile-handle">@{{ profile_user.username }}</p>
+          <h1>{{ profile_user.full_name }}</h1>
+        </div>
+        <div class="profile-actions">
+          {% if is_self %}
+            <a class="profile-button profile-button-primary" href="{{ url_for('profile.edit_profile') }}">Edit profile</a>
+            <a class="profile-button profile-button-secondary" href="{{ url_for('profile.edit_profile') }}">Change photo</a>
+          {% else %}
+            <form method="post" action="{{ url_for('profile.follow', username=profile_user.username) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="profile-button {{ 'profile-button-secondary' if is_following else 'profile-button-primary' }}" type="submit">
+                {{ "Following" if is_following else "Follow" }}
+              </button>
+            </form>
+            <a class="profile-button profile-button-secondary" href="{{ url_for('messages.index', user_id=profile_user.id) }}">Message</a>
+          {% endif %}
+          <div class="profile-menu">
+            <button class="profile-button profile-button-icon profile-menu-trigger" type="button"
+                    data-profile-menu-trigger aria-haspopup="menu" aria-expanded="false"
+                    aria-label="More profile options" title="More options">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+            </button>
+            <div class="profile-menu-panel" data-profile-menu role="menu" aria-label="Profile options" hidden>
+              <button type="button" class="profile-menu-item" data-profile-share role="menuitem">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.6 6.6-4.2m-6.6 7 6.6 4.2"/></svg><span>Share Profile</span>
+              </button>
+              <button type="button" class="profile-menu-item" data-copy-profile role="menuitem">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg><span>Copy Profile Link</span>
+              </button>
+              <button type="button" class="profile-menu-item" data-open-profile-qr role="menuitem">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h3v3h-3zm5 0h2v2h-2zm-5 5h2v2h-2zm5-1h2v3h-2z"/></svg><span>QR Code</span>
+              </button>
+              <a class="profile-menu-item" href="{{ url_for('settings.index') }}#account" role="menuitem">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.7 1l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.7-1l-1.7.7-1.4-2.4 1.4-1.1a7 7 0 0 1 0-2l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.7-1l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.7 1l1.7-.7 1.4 2.4-1.4 1.1a7 7 0 0 1 0 2z"/></svg><span>Account Settings</span>
+              </a>
+              <a class="profile-menu-item" href="{{ url_for('settings.index') }}#privacy" role="menuitem">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg><span>Privacy Settings</span>
+              </a>
+              {% if not is_self %}
+                <span class="profile-menu-divider" role="separator"></span>
+                <button type="button" class="profile-menu-item is-danger" data-open-profile-report role="menuitem">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4m0 4h.01"/><path d="M10.3 3.9 1.8 18.5A1.7 1.7 0 0 0 3.3 21h17.4a1.7 1.7 0 0 0 1.5-2.5L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg><span>Report User</span>
+                </button>
+              {% endif %}
+              <form class="sidebar-logout" method="post" action="{{ url_for('auth.logout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="sidebar-link" type="submit">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5m5 5H3"/><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"/></svg><span>Logout</span>
+            </button>
+          </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-stats" aria-label="Profile statistics">
+        <span><strong>{{ profile_post_count|default(posts|length) }}</strong> <span>posts</span></span>
+        <a href="{{ url_for('profile.followers', username=profile_user.username) }}"><strong>{{ follower_count }}</strong> <span>followers</span></a>
+        <a href="{{ url_for('profile.following', username=profile_user.username) }}"><strong>{{ following_count }}</strong> <span>following</span></a>
+      </div>
+
+      <div class="profile-bio">
+        <p>{{ profile_user.bio or "No bio yet." }}</p>
+        {% if profile_user.website %}
+          {% set profile_website = profile_user.website %}
+          {% if profile_website.startswith("https://") or profile_website.startswith("http://") %}
+            <a class="profile-website" href="{{ profile_website }}" target="_blank" rel="noopener noreferrer">{{ profile_website|replace("https://", "")|replace("http://", "")|trim("/") }}</a>
+          {% endif %}
+        {% endif %}
+        {% if profile_user.created_at %}
+          <span class="profile-member-since">On PIXORA since {{ profile_user.created_at.strftime("%B %Y") }}</span>
+        {% endif %}
+      </div>
+      <p class="profile-share-status" aria-live="polite"></p>
+    </div>
+  </section>
+  <dialog class="profile-qr-dialog" data-profile-qr-dialog aria-labelledby="profile-qr-title">
+    <button class="profile-dialog-close" type="button" data-close-profile-dialog aria-label="Close QR code">&times;</button>
+    <p class="profile-dialog-kicker">PIXORA PROFILE</p>
+    <h2 id="profile-qr-title">Scan to visit @{{ profile_user.username }}</h2>
+    <img src="{{ url_for('profile.profile_qr', username=profile_user.username) }}" alt="QR code linking to @{{ profile_user.username }}'s profile">
+    <a class="profile-button profile-button-secondary" href="{{ url_for('profile.profile_qr', username=profile_user.username) }}">Download QR code</a>
+  </dialog>
+  {% if not is_self %}
+    <dialog class="profile-report-dialog" data-profile-report-dialog aria-labelledby="profile-report-title">
+      <form method="post" action="{{ url_for('profile.report_user', username=profile_user.username) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="profile-dialog-close" type="button" data-close-profile-dialog aria-label="Close report form">&times;</button>
+        <p class="profile-dialog-kicker">HELP KEEP PIXORA SAFE</p>
+        <h2 id="profile-report-title">Report @{{ profile_user.username }}</h2>
+        <p class="profile-report-description">Choose the reason that best describes your concern. Your report will be added to PIXORA’s review queue.</p>
+        <label class="profile-report-label" for="profile-report-reason">Reason</label>
+        <select id="profile-report-reason" name="reason" required>
+          <option value="">Select a reason</option>
+          <option value="spam">Spam</option>
+          <option value="harassment">Harassment or bullying</option>
+          <option value="impersonation">Impersonation</option>
+          <option value="inappropriate">Inappropriate content</option>
+          <option value="other">Something else</option>
+        </select>
+        <label class="profile-report-label" for="profile-report-details">Additional details <span>(optional)</span></label>
+        <textarea id="profile-report-details" name="details" maxlength="500" rows="3" placeholder="Share any context that may help our review."></textarea>
+        <button class="profile-button profile-button-primary profile-report-submit" type="submit">Submit report</button>
+      </form>
+    </dialog>
+  {% endif %}
+
+  <section class="profile-content" aria-label="Profile content">
+    <nav class="profile-tabs" aria-label="Profile sections">
+      <a class="profile-tab{% if active_tab|default('posts') == 'posts' %} is-active{% endif %}" href="{{ url_for('profile.view_profile', username=profile_user.username) }}" {% if active_tab|default('posts') == 'posts' %}aria-current="page"{% endif %}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Posts</span>
+      </a>
+      {% if is_self %}
+        <a class="profile-tab{% if active_tab|default('posts') == 'saved' %} is-active{% endif %}" href="{{ url_for('profile.saved_posts') }}" {% if active_tab|default('posts') == 'saved' %}aria-current="page"{% endif %}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.8A1.8 1.8 0 0 1 7.8 3h8.4A1.8 1.8 0 0 1 18 4.8V21l-6-4-6 4z"/></svg>
+          <span>Saved</span>
+        </a>
+      {% endif %}
+      <a class="profile-tab" href="{{ url_for('reels.index') }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m10 8 6 4-6 4zM3 9h18M8 3l4 6m2-6 4 6"/></svg>
+        <span>Reels</span>
+      </a>
+      <button class="profile-tab" type="button" data-profile-tab="tagged" aria-controls="tagged-panel" aria-selected="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3 21a7 7 0 0 1 14 0m3-12v8m-4-4h8"/></svg>
+        <span>Tagged</span>
+      </button>
+    </nav>
+
+    <div class="profile-post-grid" id="profile-posts" role="tabpanel" aria-label="{{ 'Saved posts' if active_tab|default('posts') == 'saved' else 'Posts by @' ~ profile_user.username }}">
+      {% for post in posts %}
+        <a class="profile-post-tile" href="{{ url_for('posts.view', post_id=post.id) }}" aria-label="Open post by @{{ profile_user.username }}">
+          {% if post.media_type == "video" %}<video src="{{ url_for('static', filename=post.image_path) }}" muted playsinline preload="metadata"></video>
+          {% else %}<img src="{{ url_for('static', filename=post.image_path) }}" alt="Post by @{{ profile_user.username }}{% if post.caption %}: {{ post.caption|truncate(100) }}{% endif %}"
+               loading="lazy" decoding="async">{% endif %}
+          <span class="profile-post-overlay" aria-hidden="true">
+            <span><svg viewBox="0 0 24 24"><path d="M20.8 8.8c0 5.5-8.8 10.4-8.8 10.4S3.2 14.3 3.2 8.8A4.7 4.7 0 0 1 12 6.4a4.7 4.7 0 0 1 8.8 2.4z"/></svg>{{ post.like_count }}</span>
+            <span><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.6 8.6 0 0 1-7.7 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.6a8.4 8.4 0 0 1-.9-3.8 8.6 8.6 0 0 1 4.7-7.7 8.4 8.4 0 0 1 3.8-.9h.5a8.6 8.6 0 0 1 8 8z"/></svg>{{ post.comment_count }}</span>
+          </span>
+        </a>
+      {% else %}
+        <div class="profile-empty-state">
+          <span class="profile-empty-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span>
+          <h2>{{ "No saved posts yet" if active_tab|default('posts') == 'saved' else "No posts yet" }}</h2>
+          <p>{% if active_tab|default('posts') == 'saved' %}Posts you save will be collected here.{% elif is_self %}Share a photo and it will appear here.{% else %}Posts from this profile will appear here.{% endif %}</p>
+          {% if is_self and active_tab|default('posts') != 'saved' %}<a class="profile-button profile-button-primary" href="{{ url_for('posts.create') }}">Share your first post</a>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="profile-tagged-panel" id="tagged-panel" role="tabpanel" hidden>
+      <span class="profile-empty-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3 21a7 7 0 0 1 14 0m3-12v8m-4-4h8"/></svg></span>
+      <h2>Tagged photos</h2>
+      <p>Photos this person is tagged in will appear here.</p>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/profile.js') }}" defer></script>
+{% endblock %}

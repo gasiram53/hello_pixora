@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}PIXORA · Share your moments{% endblock %}
+{% block body_class %}pixora-landing-no-sidebar{% endblock %}
+{% block site_header %}
+  {% if not session.get('user_id') %}{{ super() }}{% endif %}
+{% endblock %}
+{% block content %}
+<div class="landing-page">
+  <section class="landing-hero" aria-labelledby="landing-title">
+    <div class="hero-copy">
+      <p class="eyebrow">A LITTLE MORE COLOR. A LOT MORE CONNECTION.</p>
+      <h1 id="landing-title">Your moments,<br><span>in good company.</span></h1>
+      <p class="hero-description">A place to share what you love, find your kind of people, and keep the little moments close.</p>
+      <div class="hero-actions">
+        {% if session.get('user_id') %}
+          <a class="button" href="{{ url_for('home.feed') }}">Open your feed <span aria-hidden="true">→</span></a>
+          <a class="button secondary" href="{{ url_for('auth.register') }}">Create account</a>
+          <a class="button secondary" href="{{ url_for('auth.login') }}">Log in</a>
+        {% else %}
+          <a class="button" href="{{ url_for('auth.register') }}">Find your people <span aria-hidden="true">→</span></a>
+          <a class="button secondary" href="{{ url_for('auth.login') }}">Log in</a>
+        {% endif %}
+      </div>
+      <p class="hero-footnote"><span aria-hidden="true">✦</span> Your corner of the internet, made a little brighter.</p>
+    </div>
+
+    <div class="landing-showcase" role="img" aria-label="A colorful preview of a PIXORA post and story">
+      <div class="showcase-orbit showcase-orbit-one"></div>
+      <div class="showcase-orbit showcase-orbit-two"></div>
+      <div class="showcase-sticker"><span aria-hidden="true">✦</span> LITTLE THINGS, BIG FEELINGS</div>
+      <article class="preview-card">
+        <div class="preview-photo">
+          <span class="photo-sun"></span>
+          <span class="photo-cloud photo-cloud-one"></span>
+          <span class="photo-cloud photo-cloud-two"></span>
+          <span class="photo-hill photo-hill-back"></span>
+          <span class="photo-hill photo-hill-front"></span>
+          <span class="photo-flower photo-flower-one">✿</span>
+          <span class="photo-flower photo-flower-two">✿</span>
+          <span class="photo-caption">somewhere, slowly</span>
+        </div>
+        <div class="preview-post">
+          <div class="preview-author">
+            <span class="preview-avatar">m</span>
+            <span><strong>maya.rose</strong><small>Sunday afternoon</small></span>
+            <span class="preview-more" aria-hidden="true">···</span>
+          </div>
+          <div class="preview-reactions"><span aria-hidden="true">♡</span><span aria-hidden="true">▢</span><span aria-hidden="true">↗</span><span class="preview-dots" aria-hidden="true">● ● ●</span></div>
+          <p><strong>maya.rose</strong> taking the scenic route today 🌼</p>
+        </div>
+      </article>
+      <div class="story-float">
+        <span class="story-float-ring"><span>j</span></span>
+        <span><strong>A new story</strong><small>from your people</small></span>
+        <span class="story-float-sparkle" aria-hidden="true">✦</span>
+      </div>
+      <div class="showcase-caption"><span class="caption-dot"></span> A feed that feels like you</div>
+    </div>
+  </section>
+
+  <section class="landing-features" aria-labelledby="features-title">
+    <div class="features-intro">
+      <p class="section-kicker">MAKE ROOM FOR THE GOOD STUFF</p>
+      <h2 id="features-title">A little space for<br>everything you are.</h2>
+    </div>
+    <article class="feature-card">
+      <span class="feature-icon feature-icon-photo" aria-hidden="true">▧</span>
+      <h3>Share your view</h3>
+      <p>Post photos and videos, and let your everyday become someone’s favorite moment.</p>
+    </article>
+    <article class="feature-card">
+      <span class="feature-icon feature-icon-story" aria-hidden="true">◉</span>
+      <h3>Catch the in-between</h3>
+      <p>Stories and reels make it easy to share the moments that happen along the way.</p>
+    </article>
+    <article class="feature-card">
+      <span class="feature-icon feature-icon-chat" aria-hidden="true">♡</span>
+      <h3>Stay close</h3>
+      <p>Find new creators, follow your people, and keep the conversation going.</p>
+    </article>
+  </section>
+
+  <footer class="landing-footer">
+    <span class="footer-mark" aria-hidden="true">✳</span>
+    <p>Made for moments worth keeping.</p>
+    {% if not session.get('user_id') %}
+      <a href="{{ url_for('auth.register') }}">Come on in <span aria-hidden="true">→</span></a>
+    {% else %}
+      <a href="{{ url_for('home.feed') }}">Back to your feed <span aria-hidden="true">→</span></a>
+    {% endif %}
+  </footer>
+</div>
+{% endblock %}

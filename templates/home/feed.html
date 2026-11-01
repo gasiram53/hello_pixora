@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% block title %}Your feed · PIXORA{% endblock %}
+{% block body_class %}pixora-home{% endblock %}
+{% block container_class %}home-container{% endblock %}
+
+{% macro icon(name, size=22) -%}
+<svg class="ui-icon" width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+     aria-hidden="true" focusable="false">
+  {% if name == "home" %}<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>
+  {% elif name == "search" %}<circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/>
+  {% elif name == "explore" %}<circle cx="12" cy="12" r="9"/><path d="m15.8 8.2-2.4 5.2-5.2 2.4 2.4-5.2z"/>
+  {% elif name == "message" %}<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.6 8.6 0 0 1-7.7 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.6a8.4 8.4 0 0 1-.9-3.8 8.6 8.6 0 0 1 4.7-7.7 8.4 8.4 0 0 1 3.8-.9h.5a8.6 8.6 0 0 1 8 8z"/>
+  {% elif name == "heart" %}<path d="M20.8 8.8c0 5.5-8.8 10.4-8.8 10.4S3.2 14.3 3.2 8.8A4.7 4.7 0 0 1 12 6.4a4.7 4.7 0 0 1 8.8 2.4z"/>
+  {% elif name == "plus" %}<rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8m-4-4h8"/>
+  {% elif name == "user" %}<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>
+  {% elif name == "bookmark" %}<path d="M6 4.8A1.8 1.8 0 0 1 7.8 3h8.4A1.8 1.8 0 0 1 18 4.8V21l-6-4-6 4z"/>
+  {% elif name == "share" %}<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.6 6.6-4.2m-6.6 7 6.6 4.2"/>
+  {% elif name == "comment" %}<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.6 8.6 0 0 1-7.7 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.6a8.4 8.4 0 0 1-.9-3.8 8.6 8.6 0 0 1 4.7-7.7 8.4 8.4 0 0 1 3.8-.9h.5a8.6 8.6 0 0 1 8 8z"/>
+  {% elif name == "more" %}<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>
+  {% elif name == "sparkle" %}<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/>
+  {% elif name == "trend" %}<path d="m3 17 6-6 4 4 8-9"/><path d="M15 6h6v6"/>
+  {% elif name == "bell" %}<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>
+  {% endif %}
+</svg>
+{%- endmacro %}
+
+{% block content %}
+<div class="home-shell">
+  <section class="feed-column" aria-label="Home feed">
+    <div class="feed-heading">
+      <div><p class="section-kicker">YOUR COMMUNITY</p><h1>Home feed</h1></div>
+      <div class="feed-header-actions">
+        <a class="share-post-link" href="{{ url_for('posts.create') }}" aria-label="Create a post">{{ icon("plus", 18) }}<span>Create post</span></a>
+        <a class="feed-header-icon" href="{{ url_for('notifications.index') }}"
+           aria-label="{% if unread_notifications %}{{ unread_notifications }} unread notifications{% else %}Notifications{% endif %}"
+           title="Notifications">
+          {{ icon("bell", 20) }}
+          {% if unread_notifications %}<span class="feed-notification-badge" aria-hidden="true">{{ unread_notifications if unread_notifications < 100 else "99+" }}</span>{% endif %}
+        </a>
+        <button class="theme-toggle feed-theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch to dark mode">
+          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.4A8.5 8.5 0 0 1 8.6 3.8 8.6 8.6 0 1 0 20.2 15.4Z"/></svg>
+          <span class="sr-only" data-theme-label>Dark mode</span>
+        </button>
+      </div>
+    </div>
+
+    <section class="stories-panel" aria-label="Stories and community">
+      <div class="panel-heading">
+        <h2>Stories</h2>
+        <a href="{{ url_for('stories.index') }}">View all <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="stories-track">
+        {% set own_group = namespace(found=false) %}
+        {% for group in story_groups %}
+          {% if group.is_own %}
+            {% set own_group.found = true %}
+            <div class="story-item-wrap own-story-wrap">
+              <button class="story-item story-group-button{% if not group.has_unviewed %} is-viewed{% endif %}"
+                      type="button" data-open-story-group="{{ loop.index0 }}" aria-label="View your story">
+                <span class="story-ring"><span class="story-avatar own-avatar">
+                  {% if current_user.avatar_path %}<img src="{{ url_for('static', filename=current_user.avatar_path) }}" alt="">
+                  {% else %}<span>{{ current_user.username[0]|upper }}</span>{% endif %}
+                </span></span>
+                <span class="story-name">Your Story</span>
+              </button>
+              <button class="story-add-button" type="button" data-open-story-dialog aria-label="Add another story">+</button>
+            </div>
+          {% endif %}
+        {% endfor %}
+        {% if not own_group.found %}
+          <button class="story-item own-story" type="button" data-open-story-dialog aria-label="Add a story">
+            <span class="story-ring"><span class="story-avatar own-avatar">
+              {% if current_user.avatar_path %}<img src="{{ url_for('static', filename=current_user.avatar_path) }}" alt="">
+              {% else %}<span>{{ current_user.username[0]|upper }}</span>{% endif %}
+              <span class="story-add" aria-hidden="true">+</span>
+            </span></span>
+            <span class="story-name">Your Story</span>
+          </button>
+        {% endif %}
+        {% for group in story_groups %}
+          {% if not group.is_own %}
+            <button class="story-item story-group-button{% if not group.has_unviewed %} is-viewed{% endif %}"
+                    type="button" data-open-story-group="{{ loop.index0 }}"
+                    aria-label="View @{{ group.username }} story">
+              <span class="story-ring"><span class="story-avatar">
+                {% if group.avatar_path %}<img src="{{ url_for('static', filename=group.avatar_path) }}" alt="">
+                {% else %}<span>{{ group.username[0]|upper }}</span>{% endif %}
+              </span></span>
+              <span class="story-name">{{ group.username }}</span>
+            </button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if posts %}
+      <section class="feed-list" aria-label="Recent posts">
+        {% for post in posts %}
+          <article class="post-card" id="post-{{ post.id }}">
+            <header class="post-card-header">
+              <a class="post-author" href="{{ url_for('profile.view_profile', username=post.username) }}">
+                <span class="post-avatar">
+                  {% if post.avatar_path %}<img src="{{ url_for('static', filename=post.avatar_path) }}" alt="">
+                  {% else %}<span>{{ post.username[0]|upper }}</span>{% endif %}
+                </span>
+                <span class="author-details"><strong>{{ post.username }}</strong><time>{{ post.created_at }}</time></span>
+              </a>
+              <details class="post-menu">
+                <summary aria-label="More options for {{ post.username }}'s post" title="More options">{{ icon("more") }}</summary>
+                <div class="post-menu-popover">
+                  <a href="{{ url_for('posts.view', post_id=post.id) }}">Open post</a>
+                  <a href="{{ url_for('profile.view_profile', username=post.username) }}">View profile</a>
+                </div>
+              </details>
+            </header>
+
+            <a class="post-media-link" href="{{ url_for('posts.view', post_id=post.id) }}" aria-label="Open post by {{ post.username }}">
+              {% if post.media_type == "video" %}
+                <video class="post-media" src="{{ url_for('static', filename=post.image_path) }}"
+                       aria-label="Video post by {{ post.username }}" controls playsinline preload="metadata"></video>
+              {% else %}
+                <img class="post-media" src="{{ url_for('static', filename=post.image_path) }}"
+                     alt="Post by {{ post.username }}{% if post.caption %}: {{ post.caption|truncate(120) }}{% endif %}"
+                     loading="{{ 'eager' if loop.first else 'lazy' }}" decoding="async">
+              {% endif %}
+            </a>
+
+            <div class="post-content">
+              <div class="post-toolbar">
+                <div class="post-primary-actions">
+                  <form method="post" action="{{ url_for('posts.like', post_id=post.id) }}" class="like-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="icon-button like-button{% if post.liked %} is-liked{% endif %}" type="submit"
+                            aria-label="{{ 'Unlike' if post.liked else 'Like' }} post" title="{{ 'Unlike' if post.liked else 'Like' }}">
+                      {{ icon("heart", 25) }}
+                    </button>
+                  </form>
+                  <a class="icon-button" href="{{ url_for('posts.view', post_id=post.id) }}#comments" aria-label="Comment" title="Comment">{{ icon("comment", 24) }}</a>
+                  <button class="icon-button share-button" type="button" data-share-url="{{ url_for('posts.view', post_id=post.id, _external=True) }}" aria-label="Share post" title="Share">{{ icon("share", 23) }}</button>
+                </div>
+                <button class="icon-button save-button{% if post.saved %} is-saved{% endif %}" type="button"
+                        data-save-post="{{ post.id }}" data-save-url="{{ url_for('posts.save', post_id=post.id) }}"
+                        aria-label="{{ 'Remove saved post' if post.saved else 'Save post' }}"
+                        aria-pressed="{{ 'true' if post.saved else 'false' }}" title="{{ 'Remove saved post' if post.saved else 'Save' }}">{{ icon("bookmark", 23) }}</button>
+              </div>
+              <p class="like-count"><strong>{{ post.like_count }}</strong> {{ "like" if post.like_count == 1 else "likes" }}</p>
+              {% if post.caption %}
+                <p class="post-caption"><a class="caption-author" href="{{ url_for('profile.view_profile', username=post.username) }}">{{ post.username }}</a> {{ post.caption }}</p>
+              {% endif %}
+              <a class="comments-link" href="{{ url_for('posts.view', post_id=post.id) }}#comments">
+                {% if post.comment_count %}View all {{ post.comment_count }} comments{% else %}Be the first to comment{% endif %}
+              </a>
+              <form class="quick-comment" method="post" action="{{ url_for('posts.comment', post_id=post.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label class="sr-only" for="comment-{{ post.id }}">Add a comment</label>
+                <input id="comment-{{ post.id }}" type="text" name="body" maxlength="1000" placeholder="Add a comment…" required>
+                <button type="submit">Post</button>
+              </form>
+              <span class="share-status" aria-live="polite"></span>
+            </div>
+          </article>
+        {% endfor %}
+      </section>
+    {% else %}
+      <section class="empty-feed">
+        <span class="empty-feed-icon">{{ icon("sparkle", 27) }}</span>
+        <p class="section-kicker">A LITTLE SPACE TO BEGIN</p>
+        <h2>Your feed is quiet</h2>
+        <p>Follow creators you love or share your first moment with the PIXORA community.</p>
+        <div class="empty-feed-actions">
+          <a class="primary-button" href="{{ url_for('search.search') }}">{{ icon("search", 18) }}Find people</a>
+          <a class="quiet-button" href="{{ url_for('posts.create') }}">{{ icon("plus", 18) }}Create a post</a>
+        </div>
+      </section>
+    {% endif %}
+  </section>
+
+  <aside class="right-rail" aria-label="Discover on PIXORA">
+    <section class="account-card">
+      <a class="account-avatar" href="{{ url_for('profile.view_profile', username=current_user.username) }}">
+        {% if current_user.avatar_path %}<img src="{{ url_for('static', filename=current_user.avatar_path) }}" alt="">
+        {% else %}<span>{{ current_user.username[0]|upper }}</span>{% endif %}
+      </a>
+      <div class="account-copy">
+        <a href="{{ url_for('profile.view_profile', username=current_user.username) }}"><strong>{{ current_user.username }}</strong></a>
+        <span>{{ current_user.full_name }}</span>
+      </div>
+      <a class="switch-link" href="{{ url_for('profile.edit_profile') }}">Edit</a>
+    </section>
+
+    <section class="discover-card">
+      <div class="panel-heading">
+        <h2>Creators in your feed</h2>
+        <a href="{{ url_for('search.search') }}">Discover</a>
+      </div>
+      {% set discover_people = namespace(usernames=[]) %}
+      {% for post in posts %}
+        {% if post.username != current_user.username and post.username not in discover_people.usernames %}
+          {% set _ = discover_people.usernames.append(post.username) %}
+          <div class="suggestion-row">
+            <a class="suggestion-avatar" href="{{ url_for('profile.view_profile', username=post.username) }}">
+              {% if post.avatar_path %}<img src="{{ url_for('static', filename=post.avatar_path) }}" alt="">
+              {% else %}<span>{{ post.username[0]|upper }}</span>{% endif %}
+            </a>
+            <div class="suggestion-copy">
+              <a href="{{ url_for('profile.view_profile', username=post.username) }}"><strong>{{ post.username }}</strong></a>
+              <span>Creator you follow</span>
+            </div>
+            <a class="follow-link" href="{{ url_for('profile.view_profile', username=post.username) }}">View</a>
+          </div>
+        {% endif %}
+      {% endfor %}
+      <a class="discover-cta" href="{{ url_for('search.search') }}">{{ icon("search", 17) }}Find new people to follow</a>
+    </section>
+
+    <section class="trending-card">
+      <div class="panel-heading"><h2>Trending in PIXORA</h2>{{ icon("trend", 19) }}</div>
+      {% set tags = namespace(values=[]) %}
+      {% for post in posts %}
+        {% for word in post.caption.split() %}
+          {% if word.startswith("#") and word|length > 1 %}
+            {% set tag = word|trim(".,!?;:()[]{}") %}
+            {% if tag not in tags.values %}{% set _ = tags.values.append(tag) %}{% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+      {% for tag in tags.values[:5] %}
+        <a class="trend-row" href="{{ url_for('search.search', q=tag) }}">
+          <span class="trend-icon">{{ icon("trend", 16) }}</span>
+          <span><strong>{{ tag }}</strong><small>Explore this topic</small></span>
+          <span class="trend-arrow" aria-hidden="true">↗</span>
+        </a>
+      {% else %}
+        <p class="trending-empty">Topics from captions with hashtags will show up here.</p>
+      {% endfor %}
+    </section>
+
+    <footer class="home-footer">
+      <nav aria-label="PIXORA links">
+        <a href="{{ url_for('index') }}">About</a><span>·</span>
+        <a href="{{ url_for('settings.index') }}">Settings</a><span>·</span>
+        <a href="{{ url_for('search.search') }}">Explore</a><span>·</span>
+        <a href="{{ url_for('reels.index') }}">Reels</a>
+      </nav>
+      <p>© PIXORA</p>
+    </footer>
+  </aside>
+</div>
+
+{% include "stories/_components.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/feed.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/stories.js') }}" defer></script>
+{% endblock %}

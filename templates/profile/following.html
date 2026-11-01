@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Following · PIXORA{% endblock %}
+{% block content %}
+<section class="follow-list-page">
+  <header class="page-heading">
+    <div><p class="eyebrow">COMMUNITY</p><h1>Following</h1></div>
+    <a class="button secondary" href="{{ url_for('profile.view_profile', username=profile_user.username) }}">@{{ profile_user.username }}</a>
+  </header>
+  <section class="user-list" aria-label="Accounts followed by @{{ profile_user.username }}">
+    {% for user in following %}
+      <article class="card user-row">
+        <div class="avatar small">{% if user.avatar_path %}<img src="{{ url_for('static', filename=user.avatar_path) }}" alt="">{% else %}{{ user.username[0]|upper }}{% endif %}</div>
+        <div><a class="username" href="{{ url_for('profile.view_profile', username=user.username) }}">{{ user.full_name }}</a><p>@{{ user.username }}</p></div>
+      </article>
+    {% else %}
+      <p class="card empty-state muted">Not following anyone yet.</p>
+    {% endfor %}
+  </section>
+</section>
+{% endblock %}

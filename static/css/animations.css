@@ -1,0 +1,39 @@
+@keyframes pixora-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pixora-glow {
+  0%,
+  100% {
+    box-shadow: 0 10px 28px rgb(139 92 246 / 10%);
+  }
+  50% {
+    box-shadow: 0 14px 38px rgb(236 72 153 / 18%);
+  }
+}
+
+.form-card,
+.notification,
+.profile-page,
+.search-page,
+.stories-page {
+  animation: pixora-fade-up .35s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

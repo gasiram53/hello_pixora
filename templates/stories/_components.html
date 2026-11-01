@@ -1,0 +1,61 @@
+<script type="application/json" data-story-groups>{{ story_groups|tojson }}</script>
+<dialog class="story-compose-dialog" data-story-dialog aria-labelledby="story-dialog-title">
+  <form method="dialog" class="story-dialog-close"><button type="submit" aria-label="Close story form">×</button></form>
+  <div class="story-dialog-heading">
+    <span class="story-dialog-icon" aria-hidden="true">✦</span>
+    <p class="story-kicker">A MOMENT, SHARED</p><h2 id="story-dialog-title">Add to your story</h2>
+    <p>Share a photo or video. It will be available for 24 hours.</p>
+  </div>
+  <form method="post" action="{{ url_for('stories.index') }}" enctype="multipart/form-data" class="story-compose-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="story-upload-label" for="story-media">
+      <span class="story-upload-prompt"><strong>Choose a photo or video</strong><small>PNG, JPG, GIF, WEBP, MP4, WEBM, MOV · up to 16 MB</small></span>
+      <input id="story-media" type="file" name="media" accept="image/png,image/jpeg,image/gif,image/webp,video/mp4,video/webm,video/quicktime" required data-story-file>
+    </label>
+    <div class="story-upload-preview" data-story-preview hidden></div>
+    <label class="story-field-label">Caption <span>Optional · 500 characters</span>
+      <textarea name="caption" maxlength="500" rows="2" placeholder="Add a little context…" data-caption-input></textarea>
+    </label>
+    <label class="story-field-label">Text overlay <span>Optional · 120 characters</span>
+      <input type="text" name="overlay_text" maxlength="120" placeholder="Add a title to your story…" data-overlay-input>
+    </label>
+    <div class="story-compose-actions">
+      <button class="story-cancel-button" type="button" data-cancel-story>Cancel</button>
+      <button class="story-submit" type="submit" disabled data-story-submit>Share to Story</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="story-viewer-dialog" data-story-viewer aria-label="Story viewer">
+  <div class="story-viewer-shell">
+    <div class="story-progress-bars" data-story-progress aria-label="Story progress"></div>
+    <header class="story-viewer-header">
+      <span class="story-viewer-avatar" data-viewer-avatar></span>
+      <span class="story-viewer-creator"><strong data-viewer-name></strong><time data-viewer-time></time></span>
+      <button class="story-viewer-control" type="button" data-story-pause aria-label="Pause stories">Ⅱ</button>
+      <button class="story-viewer-control" type="button" data-story-close aria-label="Close stories">×</button>
+    </header>
+    <button class="story-nav story-nav-prev" type="button" data-story-prev aria-label="Previous story">‹</button>
+    <div class="story-viewer-stage" data-story-stage>
+      <div class="story-overlay-text" data-viewer-overlay hidden></div>
+      <div class="story-caption" data-viewer-caption hidden></div>
+      <div class="story-viewer-loading" data-viewer-loading hidden>Loading story…</div>
+    </div>
+    <button class="story-nav story-nav-next" type="button" data-story-next aria-label="Next story">›</button>
+    <div class="story-owner-tools" data-owner-tools hidden>
+      <button type="button" data-story-viewers>Viewers <span data-view-count></span></button>
+      <form method="post" data-story-delete-form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit">Delete story</button>
+      </form>
+      <div class="story-viewer-list" data-story-viewer-list hidden></div>
+    </div>
+    <form class="story-reply-form" method="post" data-story-reply-form>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label class="sr-only" for="story-reply-input">Reply to this story</label>
+      <input id="story-reply-input" type="text" name="body" maxlength="2000" placeholder="Reply to story…" data-reply-input>
+      <button type="submit" aria-label="Send story reply">➤</button>
+    </form>
+    <div class="story-viewer-error" data-story-error role="status" hidden></div>
+  </div>
+</dialog>

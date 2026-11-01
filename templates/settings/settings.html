@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Settings · PIXORA{% endblock %}
+{% block content %}
+<section class="form-card" id="account">
+  <h1>Account settings</h1>
+  <p>Manage your PIXORA username and password.</p>
+  <h2>Username</h2>
+  <p>Your username appears on your profile and can be used to find your account.</p>
+  <form method="post" action="{{ url_for('settings.update_username') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="settings-username">Username</label>
+    <input id="settings-username" type="text" name="username" value="{{ account.username }}" minlength="3" maxlength="30" pattern="[a-zA-Z0-9_]{3,30}" autocomplete="username" required>
+    <label for="username-current-password">Current password</label>
+    <input id="username-current-password" type="password" name="current_password" autocomplete="current-password" required>
+    <button class="button" type="submit">Update username</button>
+  </form>
+  <hr>
+  <h2>Password</h2>
+  <p>Choose a new password with at least 8 characters.</p>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="password-current">Current password</label>
+    <input id="password-current" type="password" name="current_password" autocomplete="current-password" required>
+    <label for="password-new">New password</label>
+    <input id="password-new" type="password" name="new_password" minlength="8" autocomplete="new-password" required>
+    <button class="button" type="submit">Update password</button>
+  </form>
+  <hr>
+  <h2 id="privacy">Story privacy</h2>
+  <p>Only existing followers can view your stories. This does not change profile or post visibility.</p>
+  <form method="post" action="{{ url_for('settings.update_privacy') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="privacy-setting">
+      <input type="checkbox" name="is_private" value="1" {% if account.is_private %}checked{% endif %}>
+      Make my stories visible to followers only
+    </label>
+    <button class="button secondary" type="submit">Save privacy setting</button>
+  </form>
+  <hr>
+  <h2>Sign out</h2>
+  <p>Finished using PIXORA? Sign out of your account on this device.</p>
+  <form method="post" action="{{ url_for('auth.logout') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="button secondary" type="submit">Log out</button>
+  </form>
+</section>
+{% endblock %}

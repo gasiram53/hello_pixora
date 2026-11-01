@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Log in · PIXORA{% endblock %}
+{% block body_class %}pixora-login-no-sidebar{% endblock %}
+{% block site_header %}
+  {% if not session.get('user_id') %}{{ super() }}{% endif %}
+{% endblock %}
+{% block content %}
+<section class="form-card">
+  <h1>Welcome back</h1>
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Email<input type="email" name="email" autocomplete="email" required></label>
+    <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+    <button class="button" type="submit">Log in</button>
+  </form>
+  <p><a href="{{ url_for('auth.forgot_password') }}">Forgot your password?</a></p>
+  <p>New to PIXORA? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
+</section>
+{% endblock %}

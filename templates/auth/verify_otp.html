@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Verify email · PIXORA{% endblock %}
+{% block content %}
+<section class="form-card">
+  <h1>Check your email</h1>
+  <p>Enter the six-digit code. It expires after 10 minutes.</p>
+  <form method="post" action="{{ url_for('auth.verify_otp_route') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Verification code<input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></label>
+    <button class="button" type="submit">Verify email</button>
+  </form>
+  <form method="post" action="{{ url_for('auth.resend_otp') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="link-button" type="submit">Send a new code</button>
+  </form>
+</section>
+{% endblock %}

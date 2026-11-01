@@ -1,0 +1,303 @@
+body {
+  background:
+    radial-gradient(ellipse at 82% 0%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 34rem),
+    var(--canvas);
+  color: var(--ink);
+}
+
+a {
+  color: var(--accent-dark);
+  text-decoration-thickness: .07em;
+  text-underline-offset: .18em;
+  transition: color .18s ease;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+::selection {
+  color: #fff;
+  background: var(--accent);
+}
+
+.container {
+  min-width: 0;
+}
+
+.card,
+.form-card,
+.notification {
+  border-color: var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+}
+
+.button {
+  min-height: 44px;
+  padding: .72rem 1.15rem;
+  border-radius: 12px;
+  background: linear-gradient(115deg, var(--accent), var(--accent-pink));
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 22%, transparent);
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(115deg, var(--accent-dark), var(--accent-pink));
+  box-shadow: 0 11px 24px color-mix(in srgb, var(--accent) 29%, transparent);
+}
+
+.button:active {
+  transform: translateY(0) scale(.985);
+}
+
+.button.secondary {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: none;
+  color: var(--ink);
+}
+
+.button.secondary:hover {
+  border-color: color-mix(in srgb, var(--accent) 36%, var(--line));
+  background: color-mix(in srgb, var(--accent) 6%, var(--paper));
+  color: var(--accent-dark);
+}
+
+.form-card {
+  position: relative;
+  width: min(100%, 470px);
+  margin: clamp(1.5rem, 6vh, 4rem) auto;
+  padding: clamp(1.35rem, 4vw, 2.5rem);
+  overflow: hidden;
+  border-radius: 22px;
+  box-shadow: var(--shadow-md);
+}
+
+.form-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-pink), var(--accent-orange));
+  content: "";
+}
+
+.form-card h1 {
+  margin: .15rem 0 .55rem;
+  color: var(--ink);
+  font-size: clamp(1.65rem, 5vw, 2rem);
+  letter-spacing: -.055em;
+}
+
+.form-card > p {
+  color: var(--muted);
+}
+
+.form-card form {
+  gap: 1.05rem;
+  margin-top: 1.2rem;
+}
+
+.form-card label {
+  gap: .48rem;
+  color: var(--ink);
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.form-card input,
+.form-card textarea,
+.form-card select {
+  min-height: 46px;
+  padding: .75rem .85rem;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--paper) 94%, var(--canvas));
+  color: var(--ink);
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.form-card input:focus,
+.form-card textarea:focus,
+.form-card select:focus {
+  border-color: var(--accent);
+  outline: 0;
+  background: var(--paper);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.form-card input[type="file"] {
+  height: auto;
+  padding: .55rem;
+}
+
+.form-card form > .button {
+  width: 100%;
+  margin-top: .2rem;
+}
+
+.flash {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.flash.error {
+  border-color: color-mix(in srgb, var(--danger) 24%, var(--line));
+}
+
+.flash.success {
+  border-color: color-mix(in srgb, var(--success) 24%, var(--line));
+}
+
+.page-heading {
+  margin-bottom: 1.2rem;
+}
+
+.page-heading h1 {
+  color: var(--ink);
+  font-size: clamp(1.7rem, 4vw, 2.3rem);
+  letter-spacing: -.055em;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .55rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: color .18s ease, border-color .18s ease, background .18s ease, transform .18s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  color: var(--accent-dark);
+}
+
+.theme-toggle:active {
+  transform: scale(.97);
+}
+
+.theme-toggle .theme-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.theme-icon-moon,
+body[data-theme="dark"] .theme-icon-sun {
+  display: none;
+}
+
+body[data-theme="dark"] .theme-icon-moon {
+  display: block;
+}
+
+.empty-state {
+  color: var(--muted);
+}
+
+body[data-theme="dark"] {
+  background:
+    radial-gradient(ellipse at 82% 0%, rgb(167 139 250 / 8%), transparent 34rem),
+    var(--canvas);
+}
+
+body[data-theme="dark"] .card,
+body[data-theme="dark"] .form-card,
+body[data-theme="dark"] .notification,
+body[data-theme="dark"] input,
+body[data-theme="dark"] textarea,
+body[data-theme="dark"] select {
+  color: var(--ink);
+  background-color: var(--paper);
+  border-color: var(--line);
+}
+
+body[data-theme="dark"] .button.secondary {
+  color: var(--ink);
+}
+
+body[data-theme="dark"] .profile-page {
+  --profile-ink: var(--ink);
+  --profile-muted: var(--muted);
+  --profile-line: var(--line);
+  --profile-accent: var(--accent);
+  --profile-accent-dark: var(--accent-dark);
+}
+
+body[data-theme="dark"] .profile-header,
+body[data-theme="dark"] .profile-button-icon {
+  border-color: var(--line);
+  background: var(--paper);
+}
+
+body[data-theme="dark"] .profile-bio p,
+body[data-theme="dark"] .profile-stats > span,
+body[data-theme="dark"] .profile-stats > a {
+  color: var(--muted);
+}
+
+body[data-theme="dark"] .profile-button-secondary {
+  border-color: var(--line);
+  color: var(--ink);
+  background: #302d3d;
+}
+
+body[data-theme="dark"] .profile-tab {
+  color: var(--muted);
+}
+
+body[data-theme="dark"] .profile-tab:hover,
+body[data-theme="dark"] .profile-tab.is-active {
+  color: var(--ink);
+}
+
+body[data-theme="dark"] .search-page {
+  --search-ink: var(--ink);
+  --search-muted: var(--muted);
+  --search-line: var(--line);
+  --search-accent: var(--accent);
+  --search-pale: #302d3d;
+}
+
+body[data-theme="dark"] .search-empty,
+body[data-theme="dark"] .discovery-tile {
+  border-color: var(--line);
+  background-color: var(--paper);
+}
+
+body[data-theme="dark"] .result-count,
+body[data-theme="dark"] .search-shortcuts kbd {
+  border-color: var(--line);
+  color: var(--muted);
+  background: var(--paper);
+}
+
+@media (max-width: 760px) {
+  .form-card {
+    margin: 1.2rem auto;
+  }
+}
+
+@media (max-width: 400px) {
+  .form-card {
+    padding: 1.25rem 1rem;
+    border-radius: 18px;
+  }
+}

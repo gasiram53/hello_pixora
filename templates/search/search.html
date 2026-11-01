@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Search & Explore · PIXORA{% endblock %}
+{% block content %}
+<section class="search-page" data-search-page
+         data-suggestions-url="{{ url_for('search.suggestions') }}"
+         data-static-root="{{ url_for('static', filename='') }}">
+  <header class="search-hero">
+  {% include "partials/page_header_actions.html" %}
+  <span class="search-hero-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+    </span>
+    <p class="search-kicker">FIND YOUR NEXT FAVORITE</p>
+    <h1>Search &amp; explore</h1>
+    <p class="search-subtitle">Discover people, moments, and ideas from across PIXORA.</p>
+    <form class="discovery-search" method="get" action="{{ url_for('search.search') }}" role="search" data-search-form>
+      <svg class="search-field-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+      <label class="sr-only" for="search-query">Search people, posts, captions, or hashtags</label>
+      <input id="search-query" type="search" name="q" value="{{ query }}"
+             placeholder="Search people, posts, or #hashtags" maxlength="80"
+             autocomplete="off" aria-controls="search-suggestions" aria-expanded="false"
+             data-search-input>
+      <input type="hidden" name="type" value="{{ active_filter }}" data-search-type>
+      <button class="search-clear" type="button" aria-label="Clear search" data-search-clear {% if not query %}hidden{% endif %}>×</button>
+      <button class="search-submit" type="submit">Search</button>
+      <div class="search-suggestions" id="search-suggestions" data-search-suggestions hidden>
+        <p class="suggestion-label" data-suggestion-label>PEOPLE</p>
+        <div data-suggestion-results></div>
+        <p class="suggestion-message" data-suggestion-message hidden></p>
+      </div>
+    </form>
+    <div class="search-shortcuts" aria-hidden="true"><span>Try</span><kbd>#travel</kbd><kbd>photography</kbd><kbd>creator name</kbd></div>
+  </header>
+
+  <nav class="search-tabs" aria-label="Search filters">
+    {% for filter_name, filter_label in [("all", "Explore"), ("people", "People"), ("posts", "Posts"), ("reels", "Reels"), ("hashtags", "Hashtags")] %}
+      <a class="search-tab{% if active_filter == filter_name %} is-active{% endif %}"
+         href="{{ url_for('search.search', q=query, type=filter_name) }}"
+         {% if active_filter == filter_name %}aria-current="page"{% endif %}>{{ filter_label }}</a>
+    {% endfor %}
+  </nav>
+
+  <section class="search-history" data-search-history hidden aria-label="Recent searches">
+    <div class="result-heading">
+      <div><p class="search-kicker">PICK UP WHERE YOU LEFT OFF</p><h2>Recent searches</h2></div>
+      <button type="button" class="clear-history" data-clear-search-history>Clear all</button>
+    </div>
+    <div class="recent-search-chips" data-recent-searches></div>
+    <div class="recent-people-wrap" data-recent-people-wrap hidden>
+      <div class="recent-people-heading"><h3>Recently viewed people</h3><button type="button" data-clear-recent-people>Clear</button></div>
+      <div class="people-results recent-people-results" data-recent-people></div>
+    </div>
+  </section>
+
+  {% if users %}
+    <section class="people-section" aria-label="People search results">
+      <div class="result-heading">
+        <div><p class="search-kicker">THE PEOPLE BEHIND THE POSTS</p><h2>People</h2></div>
+        <span class="result-count">{{ users|length }} {{ "match" if users|length == 1 else "matches" }}</span>
+      </div>
+      <div class="people-results">
+        {% for user in users %}
+          <article class="person-card">
+            <a class="person-main" href="{{ url_for('profile.view_profile', username=user.username) }}"
+               data-person-result data-username="{{ user.username }}" data-full-name="{{ user.full_name }}"
+               data-profile-url="{{ url_for('profile.view_profile', username=user.username) }}"
+               data-avatar-url="{{ url_for('static', filename=user.avatar_path) if user.avatar_path else '' }}">
+              <span class="person-avatar">
+                {% if user.avatar_path %}<img src="{{ url_for('static', filename=user.avatar_path) }}" alt="">
+                {% else %}{{ user.username[0]|upper }}{% endif %}
+              </span>
+              <span class="person-details">
+                <strong>{{ user.full_name }}</strong><span>@{{ user.username }}</span>
+                <small>{{ user.bio or "PIXORA community member" }}</small>
+              </span>
+            </a>
+            <form method="post" action="{{ url_for('profile.follow', username=user.username) }}" class="search-follow-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="next" value="{{ url_for('search.search', q=query, type=active_filter) }}">
+              <button class="follow-button{% if user.is_following %} is-following{% endif %}" type="submit">
+                {{ "Following" if user.is_following else "Follow" }}
+              </button>
+            </form>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if active_filter in ["all", "posts", "hashtags"] %}
+    <section class="explore-section" aria-label="Post discovery">
+      <div class="result-heading">
+        <div>
+          <p class="search-kicker">{% if query %}MATCHING MOMENTS{% else %}A LITTLE INSPIRATION{% endif %}</p>
+          <h2>{% if active_filter == "hashtags" and query %}Posts tagged #{{ query|replace("#", "") }}{% elif query %}Posts{% else %}Explore posts{% endif %}</h2>
+        </div>
+        {% if posts %}<span class="result-count">{{ posts|length }} {{ "post" if posts|length == 1 else "posts" }}</span>{% endif %}
+      </div>
+      {% if posts %}
+        <div class="discovery-grid">
+          {% for post in posts %}
+            <a class="discovery-tile" href="{{ url_for('posts.view', post_id=post.id) }}"
+               aria-label="Open post by @{{ post.username }}" data-post-result>
+              {% if post.media_type == "video" %}<video src="{{ url_for('static', filename=post.image_path) }}" muted playsinline preload="metadata"></video>
+              {% else %}<img src="{{ url_for('static', filename=post.image_path) }}"
+                   alt="Post by @{{ post.username }}{% if post.caption %}: {{ post.caption|truncate(100) }}{% endif %}"
+                   loading="lazy" decoding="async">{% endif %}
+              <span class="tile-overlay">
+                <span class="tile-author"><span class="mini-avatar">{% if post.avatar_path %}<img src="{{ url_for('static', filename=post.avatar_path) }}" alt="">{% else %}{{ post.username[0]|upper }}{% endif %}</span>@{{ post.username }}</span>
+                {% if post.caption %}<span class="tile-caption">{{ post.caption|truncate(110) }}</span>{% endif %}
+                <span class="tile-metrics"><span>♥ {{ post.like_count }}</span><span>◌ {{ post.comment_count }}</span></span>
+              </span>
+            </a>
+          {% endfor %}
+        </div>
+      {% elif query %}
+        <div class="search-empty">
+          <span class="empty-search-icon" aria-hidden="true">⌕</span>
+          <h3>No matching posts yet</h3>
+          <p>Try a different phrase or search for a creator.</p>
+        </div>
+      {% else %}
+        <div class="search-empty">
+          <span class="empty-search-icon" aria-hidden="true">✧</span>
+          <h3>More moments are on their way</h3>
+          <p>New posts from verified PIXORA creators will show up here.</p>
+        </div>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  {% if active_filter == "reels" or (active_filter == "all" and query) %}
+    <section class="explore-section" aria-label="Reel search results">
+      <div class="result-heading"><div><p class="search-kicker">SHORT-FORM STORIES</p><h2>{% if query %}Reels{% else %}Explore reels{% endif %}</h2></div>
+        {% if reels %}<span class="result-count">{{ reels|length }} {{ "reel" if reels|length == 1 else "reels" }}</span>{% endif %}
+      </div>
+      {% if reels %}
+        <div class="discovery-grid reel-discovery-grid">
+          {% for reel in reels %}
+            <a class="discovery-tile reel-discovery-tile" href="{{ url_for('reels.index', _anchor='reel-' ~ reel.id) }}"
+               aria-label="Open reel by @{{ reel.username }}">
+              <video src="{{ url_for('static', filename=reel.video_path) }}" muted playsinline preload="metadata"></video>
+              <span class="reel-tile-play" aria-hidden="true">▶</span>
+              <span class="tile-overlay">
+                <span class="tile-author">@{{ reel.username }}</span>
+                {% if reel.caption %}<span class="tile-caption">{{ reel.caption|truncate(100) }}</span>{% endif %}
+                <span class="tile-metrics"><span>♥ {{ reel.like_count }}</span><span>◌ {{ reel.comment_count }}</span></span>
+              </span>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="search-empty"><span class="empty-search-icon" aria-hidden="true">▶</span><h3>No reels found</h3><p>Try another search. Reels are matched by creator and caption.</p></div>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  {% if query and active_filter == "people" and not users %}
+    <div class="search-empty people-empty"><span class="empty-search-icon" aria-hidden="true">⌕</span><h3>No people found</h3><p>Check the spelling or try a different username.</p></div>
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/search.js') }}" defer></script>
+{% endblock %}

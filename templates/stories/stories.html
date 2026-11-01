@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Stories · PIXORA{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/stories.css') }}">
+{% endblock %}
+{% block content %}
+<section class="stories-page">
+  <header class="stories-page-heading">
+    <div><p class="story-kicker">LITTLE MOMENTS, BIG FEELINGS</p><h1>Stories</h1>
+      <p>Catch up with your circle. Stories disappear after 24 hours.</p></div>
+    <button class="story-page-add" type="button" data-open-story-dialog>＋ <span>Add to story</span></button>
+  </header>
+
+  <section class="story-shelf" aria-label="Active stories">
+    <div class="story-shelf-heading"><div><p class="story-kicker">YOUR CIRCLE</p><h2>Recent stories</h2></div>
+      <span>{{ story_groups|length }} {{ "creator" if story_groups|length == 1 else "creators" }}</span></div>
+    <div class="story-shelf-list">
+      {% set own_group = namespace(found=false) %}
+      {% for group in story_groups %}
+        {% if group.is_own %}
+          {% set own_group.found = true %}
+          <div class="story-shelf-item-wrap">
+            <button type="button" class="story-shelf-item{% if not group.has_unviewed %} is-viewed{% endif %}"
+                    data-open-story-group="{{ loop.index0 }}" aria-label="View your story">
+              <span class="story-shelf-ring"><span class="story-shelf-avatar">
+                {% if current_user.avatar_path %}<img src="{{ url_for('static', filename=current_user.avatar_path) }}" alt="">
+                {% else %}{{ current_user.username[0]|upper }}{% endif %}
+              </span></span><strong>Your Story</strong><small>{{ group.stories|length }} {{ "story" if group.stories|length == 1 else "stories" }}</small>
+            </button>
+            <button class="shelf-add-button" type="button" data-open-story-dialog aria-label="Add another story">+</button>
+          </div>
+        {% endif %}
+      {% endfor %}
+      {% if not own_group.found %}
+        <button type="button" class="story-shelf-item own-shelf-item" data-open-story-dialog aria-label="Add your first story">
+          <span class="story-shelf-ring"><span class="story-shelf-avatar">
+            {% if current_user.avatar_path %}<img src="{{ url_for('static', filename=current_user.avatar_path) }}" alt="">
+            {% else %}{{ current_user.username[0]|upper }}{% endif %}
+            <span class="shelf-plus">+</span>
+          </span></span><strong>Your Story</strong><small>Share a moment</small>
+        </button>
+      {% endif %}
+      {% for group in story_groups %}
+        {% if not group.is_own %}
+          <button type="button" class="story-shelf-item{% if not group.has_unviewed %} is-viewed{% endif %}"
+                  data-open-story-group="{{ loop.index0 }}" aria-label="View @{{ group.username }} story">
+            <span class="story-shelf-ring"><span class="story-shelf-avatar">
+              {% if group.avatar_path %}<img src="{{ url_for('static', filename=group.avatar_path) }}" alt="">
+              {% else %}{{ group.username[0]|upper }}{% endif %}
+            </span></span><strong>@{{ group.username }}</strong>
+            <small>{{ group.stories|length }} {{ "story" if group.stories|length == 1 else "stories" }}</small>
+          </button>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% if not story_groups %}
+      <div class="story-shelf-empty"><span aria-hidden="true">✦</span><strong>Your story starts here</strong>
+        <p>Share a photo or video to let your circle in on the moment.</p>
+        <button type="button" data-open-story-dialog>Share your first story</button></div>
+    {% endif %}
+  </section>
+
+  {% if story_groups %}
+    <section class="story-management" aria-label="Story management">
+      <div class="story-shelf-heading"><div><p class="story-kicker">THE LATEST</p><h2>From your circle</h2></div>
+        <span>Active for 24 hours</span></div>
+      <div class="story-group-list">
+        {% for group in story_groups %}
+          <button type="button" class="story-group-card{% if not group.has_unviewed %} is-viewed{% endif %}"
+                  data-open-story-group="{{ loop.index0 }}">
+            <span class="story-shelf-ring"><span class="story-shelf-avatar">
+              {% if group.avatar_path %}<img src="{{ url_for('static', filename=group.avatar_path) }}" alt="">
+              {% else %}{{ group.username[0]|upper }}{% endif %}
+            </span></span>
+            <span class="story-group-copy"><strong>{% if group.is_own %}Your Story{% else %}@{{ group.username }}{% endif %}</strong>
+              <small>{{ group.stories|length }} {{ "story" if group.stories|length == 1 else "stories" }} · {{ "Unviewed" if group.has_unviewed else "Viewed" }}</small>
+            </span><span class="story-open-arrow" aria-hidden="true">›</span>
+          </button>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</section>
+{% include "stories/_components.html" %}
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/stories.js') }}" defer></script>
+{% endblock %}
