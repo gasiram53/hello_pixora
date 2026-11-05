@@ -12,28 +12,27 @@ home_bp = Blueprint("home", __name__)
 @home_bp.get("/feed")
 @login_required
 def feed():
+    user_id = session.get("user_id")
+
     try:
-        user_id = session.get("user_id")
+        current_app.logger.info("FEED DEBUG: Starting feed for user %s", user_id)
 
-        if not user_id:
-            raise RuntimeError("User ID missing from session")
-
-        current_app.logger.info("FEED: Starting cleanup")
+        current_app.logger.info("FEED DEBUG: Cleaning expired stories")
         cleanup_expired_story_media()
 
-        current_app.logger.info("FEED: Loading posts")
+        current_app.logger.info("FEED DEBUG: Loading posts")
         posts = get_feed(user_id)
 
-        current_app.logger.info("FEED: Loading current user")
+        current_app.logger.info("FEED DEBUG: Loading current user")
         current_user = get_by_id(user_id)
 
-        current_app.logger.info("FEED: Loading active stories")
+        current_app.logger.info("FEED DEBUG: Loading active stories")
         stories = active_stories(user_id)
 
-        current_app.logger.info("FEED: Grouping stories")
+        current_app.logger.info("FEED DEBUG: Grouping stories")
         story_groups = group_stories(stories, user_id)
 
-        current_app.logger.info("FEED: Rendering template")
+        current_app.logger.info("FEED DEBUG: Rendering template")
 
         return render_template(
             "home/feed.html",
@@ -44,6 +43,6 @@ def feed():
 
     except Exception:
         current_app.logger.exception(
-            "PIXORA FEED ERROR"
+            "PIXORA FEED ERROR for user_id=%s", user_id
         )
         raise
