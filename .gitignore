@@ -8,3 +8,5 @@ instance/
 private_uploads/
 static/uploads/*
 !static/uploads/.gitkeep
+/hello_pixora/
+/hello_pixoraa/
