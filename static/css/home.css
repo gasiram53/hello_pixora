@@ -283,11 +283,6 @@ body.pixora-home {
 .trend-row small { color: var(--home-muted); font-size: .65rem; }
 .trend-arrow { color: #989daa; font-size: .85rem; }
 .trending-empty { margin: 13px 0 2px; color: var(--home-muted); font-size: .75rem; line-height: 1.55; }
-.home-footer { padding: 0 4px; color: #9a9eaa; font-size: .65rem; line-height: 1.8; }
-.home-footer nav { display: flex; flex-wrap: wrap; gap: 5px; }
-.home-footer a { color: inherit; }
-.home-footer a:hover { color: var(--home-accent-dark); }
-.home-footer p { margin: 6px 0 0; }
 .mobile-bottom-nav { display: none; }
 
 @keyframes feed-enter {

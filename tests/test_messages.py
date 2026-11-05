@@ -87,9 +87,9 @@ class MessageRouteTests(unittest.TestCase):
         self.assertIn(b'data-call-speaker', response.data)
         self.assertIn(b'data-call-camera', response.data)
         self.assertIn(b'data-call-end', response.data)
-        self.assertIn(b'data-page-header-actions', response.data)
-        self.assertEqual(response.data.count(b'data-theme-toggle'), 1)
-        self.assertEqual(response.data.count(b'href="/notifications/"'), 1)
+        self.assertNotIn(b'data-page-header-actions', response.data)
+        self.assertNotIn(b'data-theme-toggle', response.data)
+        self.assertNotIn(b'href="/notifications/"', response.data)
 
     def test_people_search_returns_limited_public_user_fields(self):
         person = {

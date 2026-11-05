@@ -29,6 +29,8 @@ class HomeFeedTests(unittest.TestCase):
         self.assertIn(b'href="/auth/register"', response.data)
         self.assertIn(b'href="/auth/login"', response.data)
         self.assertIn(b"Open your feed", response.data)
+        self.assertIn(b'class="site-footer landing-footer"', response.data)
+        self.assertIn(b"Made for moments worth keeping.", response.data)
 
     def test_landing_page_keeps_public_navigation_for_logged_out_user(self):
         response = self.app.test_client().get("/")
@@ -55,6 +57,9 @@ class HomeFeedTests(unittest.TestCase):
         self.assertIn(b'href="/notifications/"', response.data)
         self.assertIn(b'data-theme-toggle', response.data)
         self.assertEqual(response.data.count(b"data-theme-toggle"), 1)
+        self.assertIn(b'class="site-footer home-footer"', response.data)
+        self.assertIn(b'aria-label="PIXORA links"', response.data)
+        self.assertIn("\u00a9 PIXORA".encode(), response.data)
 
     def test_populated_feed_keeps_post_actions_and_dynamic_content(self):
         posts = [

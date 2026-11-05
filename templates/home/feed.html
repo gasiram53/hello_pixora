@@ -237,17 +237,17 @@
       {% endfor %}
     </section>
 
-    <footer class="home-footer">
-      <nav aria-label="PIXORA links">
-        <a href="{{ url_for('index') }}">About</a><span>·</span>
-        <a href="{{ url_for('settings.index') }}">Settings</a><span>·</span>
-        <a href="{{ url_for('search.search') }}">Explore</a><span>·</span>
-        <a href="{{ url_for('reels.index') }}">Reels</a>
-      </nav>
-      <p>© PIXORA</p>
-    </footer>
   </aside>
 </div>
+<footer class="site-footer home-footer">
+  <nav aria-label="PIXORA links">
+    <a href="{{ url_for('index') }}">About</a><span aria-hidden="true">·</span>
+    <a href="{{ url_for('settings.index') }}">Settings</a><span aria-hidden="true">·</span>
+    <a href="{{ url_for('search.search') }}">Explore</a><span aria-hidden="true">·</span>
+    <a href="{{ url_for('reels.index') }}">Reels</a>
+  </nav>
+  <p>© PIXORA</p>
+</footer>
 
 {% include "stories/_components.html" %}
 {% endblock %}

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, current_app
 
 from models.post_model import get_feed
 from models.story_model import active_stories, group_stories
@@ -12,11 +12,38 @@ home_bp = Blueprint("home", __name__)
 @home_bp.get("/feed")
 @login_required
 def feed():
-    user_id = session["user_id"]
-    cleanup_expired_story_media()
-    return render_template(
-        "home/feed.html",
-        posts=get_feed(user_id),
-        current_user=get_by_id(user_id),
-        story_groups=group_stories(active_stories(user_id), user_id),
-    )
+    try:
+        user_id = session.get("user_id")
+
+        if not user_id:
+            raise RuntimeError("User ID missing from session")
+
+        current_app.logger.info("FEED: Starting cleanup")
+        cleanup_expired_story_media()
+
+        current_app.logger.info("FEED: Loading posts")
+        posts = get_feed(user_id)
+
+        current_app.logger.info("FEED: Loading current user")
+        current_user = get_by_id(user_id)
+
+        current_app.logger.info("FEED: Loading active stories")
+        stories = active_stories(user_id)
+
+        current_app.logger.info("FEED: Grouping stories")
+        story_groups = group_stories(stories, user_id)
+
+        current_app.logger.info("FEED: Rendering template")
+
+        return render_template(
+            "home/feed.html",
+            posts=posts,
+            current_user=current_user,
+            story_groups=story_groups,
+        )
+
+    except Exception:
+        current_app.logger.exception(
+            "PIXORA FEED ERROR"
+        )
+        raise

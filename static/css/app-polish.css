@@ -147,6 +147,120 @@ time {
   line-height: 1.5;
 }
 
+.site-footer {
+  display: flex;
+  min-width: 0;
+  min-height: 72px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem 1rem;
+  margin-top: clamp(1.25rem, 3vw, 2rem);
+  padding: .85rem clamp(1rem, 2.5vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  box-shadow: var(--shadow-sm);
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.55;
+}
+
+.site-footer nav {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 260px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .25rem .4rem;
+}
+
+.site-footer nav > span {
+  display: none;
+}
+
+.site-footer nav a,
+.site-footer > a {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: .35rem;
+  padding: 0 .65rem;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: color .18s ease, background-color .18s ease;
+}
+
+.site-footer nav a:hover,
+.site-footer > a:hover {
+  color: var(--accent-dark);
+  background: color-mix(in srgb, var(--accent) 8%, var(--paper));
+}
+
+.site-footer > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .75rem;
+}
+
+.site-footer .footer-mark {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--accent-pink) 20%, var(--line));
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--accent-pink) 9%, var(--paper));
+  color: var(--accent-pink);
+  font-size: 1.15rem;
+}
+
+.site-footer.landing-footer > p {
+  flex: 1 1 220px;
+}
+
+.site-footer.landing-footer > a {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+  color: var(--accent-dark);
+}
+
+body[data-theme="dark"] .site-footer {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+}
+
+@media (max-width: 600px) {
+  .site-footer {
+    align-items: flex-start;
+    gap: .5rem;
+    padding: .75rem;
+  }
+
+  .site-footer nav {
+    flex-basis: 100%;
+    gap: .2rem;
+  }
+
+  .site-footer nav a,
+  .site-footer > a {
+    min-height: 38px;
+    padding-inline: .55rem;
+  }
+
+  .site-footer.landing-footer > p {
+    flex: 1 1 calc(100% - 48px);
+    align-self: center;
+  }
+
+  .site-footer.landing-footer > a {
+    margin-inline-start: 0;
+  }
+}
+
 .empty-state {
   border: 1px dashed var(--line);
   border-radius: var(--radius-md);

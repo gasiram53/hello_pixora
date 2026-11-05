@@ -43,9 +43,9 @@ class ProfileRouteTests(unittest.TestCase):
         self.assertIn(b'class="app-sidebar"', response.data)
         self.assertIn(b'>Home</span>', response.data)
         self.assertIn(b'>Logout</span>', response.data)
-        self.assertIn(b'data-page-header-actions', response.data)
-        self.assertEqual(response.data.count(b'data-theme-toggle'), 1)
-        self.assertEqual(response.data.count(b'href="/notifications/"'), 1)
+        self.assertNotIn(b'data-page-header-actions', response.data)
+        self.assertNotIn(b'data-theme-toggle', response.data)
+        self.assertNotIn(b'href="/notifications/"', response.data)
 
     def test_own_profile_menu_does_not_offer_report(self):
         user = {
